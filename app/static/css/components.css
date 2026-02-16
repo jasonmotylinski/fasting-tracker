@@ -1,0 +1,303 @@
+/* ========================================
+   FASTING TRACKER — Component Styles
+   ======================================== */
+
+/* ---- Timer Ring ---- */
+.timer-section {
+    padding-top: var(--space-xl);
+    margin-bottom: var(--space-xl);
+}
+
+.timer-ring-wrap {
+    position: relative;
+    width: 260px;
+    height: 260px;
+    margin: 0 auto var(--space-lg);
+}
+
+.timer-ring {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.timer-ring-bg {
+    fill: none;
+    stroke: var(--border);
+    stroke-width: 8;
+}
+
+.timer-ring-progress {
+    fill: none;
+    stroke: var(--blue-400);
+    stroke-width: 8;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s var(--ease-out), stroke 0.5s;
+}
+
+.timer-ring-progress.completed {
+    stroke: var(--accent);
+}
+
+.timer-inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.timer-idle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.timer-idle-label {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--text-muted);
+}
+
+.timer-start-btn {
+    border-radius: var(--radius-full);
+    padding: 12px 32px;
+}
+
+.timer-active {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.timer-elapsed {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 40px;
+    color: var(--text-primary);
+    letter-spacing: -0.03em;
+    line-height: 1;
+}
+
+.timer-target {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.timer-pct {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--blue-400);
+}
+
+.timer-pct.completed {
+    color: var(--accent);
+}
+
+.timer-stop-btn {
+    margin-top: var(--space-sm);
+}
+
+/* ---- Duration Presets ---- */
+.presets {
+    margin-bottom: var(--space-xl);
+}
+
+.presets-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-md);
+}
+
+.presets-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-sm);
+}
+
+.preset {
+    padding: 12px;
+    border-radius: var(--radius-md);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text-secondary);
+    background: var(--surface-raised);
+    border: 1.5px solid var(--border);
+    transition: all 0.2s var(--ease-out);
+}
+
+.preset:hover {
+    border-color: var(--blue-500);
+    color: var(--blue-400);
+}
+
+.preset.active {
+    background: rgba(59, 109, 224, 0.1);
+    border-color: var(--blue-500);
+    color: var(--blue-400);
+}
+
+/* ---- Weekly Summary ---- */
+.weekly-summary {
+    background: var(--surface-raised);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+}
+
+.weekly-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-md);
+}
+
+.weekly-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-sm);
+    text-align: center;
+}
+
+.weekly-stat-value {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 24px;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+.weekly-stat-label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-top: 2px;
+}
+
+/* ---- History List ---- */
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.history-card {
+    background: var(--surface-raised);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    animation: fadeUp 0.3s var(--ease-out);
+}
+
+.history-status {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.history-status.success {
+    background: rgba(63, 185, 80, 0.1);
+    color: var(--green-400);
+}
+
+.history-status.incomplete {
+    background: var(--surface-overlay);
+    color: var(--text-faint);
+}
+
+.history-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.history-date {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text-primary);
+}
+
+.history-meta {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.history-delete {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-faint);
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.history-delete:hover {
+    background: rgba(248, 81, 73, 0.1);
+    color: var(--red-400);
+}
+
+.history-empty {
+    text-align: center;
+    padding: var(--space-2xl) var(--space-md);
+    color: var(--text-muted);
+}
+
+.history-empty p {
+    margin-top: var(--space-md);
+    font-size: 15px;
+}
+
+.history-pagination {
+    margin-top: var(--space-lg);
+    text-align: center;
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Responsive ---- */
+@media (min-width: 640px) {
+    .timer-ring-wrap {
+        width: 300px;
+        height: 300px;
+    }
+
+    .timer-elapsed {
+        font-size: 48px;
+    }
+
+    .presets-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}History — Fasting Tracker{% endblock %}
+
+{% block content %}
+<div class="history-page">
+    <div class="history-header">
+        <h1 class="history-title">History</h1>
+    </div>
+
+    <div id="history-list" class="history-list">
+        <div class="spinner-wrap" id="history-loading">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <div class="history-empty hidden" id="history-empty">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <p>No fasts yet. Start your first one!</p>
+    </div>
+
+    <div class="history-pagination hidden" id="history-pagination">
+        <button class="btn btn--ghost" id="load-more-btn">Load more</button>
+    </div>
+</div>
+{% endblock %}

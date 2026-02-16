@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Fasting Tracker{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <!-- Timer Section -->
+    <div class="timer-section" id="timer-section">
+        <div class="timer-ring-wrap">
+            <svg class="timer-ring" viewBox="0 0 200 200">
+                <circle class="timer-ring-bg" cx="100" cy="100" r="90" />
+                <circle class="timer-ring-progress" cx="100" cy="100" r="90"
+                    stroke-dasharray="565.49"
+                    stroke-dashoffset="565.49"
+                    id="progress-ring" />
+            </svg>
+            <div class="timer-inner" id="timer-inner">
+                <!-- Idle state (no active fast) -->
+                <div class="timer-idle" id="timer-idle">
+                    <span class="timer-idle-label">Ready to fast?</span>
+                    <button class="btn btn--primary timer-start-btn" id="start-btn">Start Fast</button>
+                </div>
+                <!-- Active state -->
+                <div class="timer-active hidden" id="timer-active">
+                    <span class="timer-elapsed" id="timer-elapsed">00:00:00</span>
+                    <span class="timer-target" id="timer-target">of 16h</span>
+                    <span class="timer-pct" id="timer-pct">0%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stop button (shown when active) -->
+        <button class="btn btn--ghost btn--full timer-stop-btn hidden" id="stop-btn">End Fast</button>
+    </div>
+
+    <!-- Duration Presets (shown when idle) -->
+    <div class="presets" id="presets">
+        <h2 class="presets-title">Duration</h2>
+        <div class="presets-grid">
+            <button class="preset" data-hours="12">12h</button>
+            <button class="preset" data-hours="14">14h</button>
+            <button class="preset active" data-hours="16">16h</button>
+            <button class="preset" data-hours="18">18h</button>
+            <button class="preset" data-hours="20">20h</button>
+            <button class="preset" data-hours="24">24h</button>
+        </div>
+    </div>
+
+    <!-- Weekly Summary -->
+    <div class="weekly-summary" id="weekly-summary">
+        <h2 class="weekly-title">This week</h2>
+        <div class="weekly-stats">
+            <div class="weekly-stat">
+                <span class="weekly-stat-value" id="weekly-completed">—</span>
+                <span class="weekly-stat-label">completed</span>
+            </div>
+            <div class="weekly-stat">
+                <span class="weekly-stat-value" id="weekly-goal">—</span>
+                <span class="weekly-stat-label">goal</span>
+            </div>
+            <div class="weekly-stat">
+                <span class="weekly-stat-value" id="weekly-hours">—</span>
+                <span class="weekly-stat-label">hours</span>
+            </div>
+            <div class="weekly-stat">
+                <span class="weekly-stat-value" id="weekly-streak">—</span>
+                <span class="weekly-stat-label">streak</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
