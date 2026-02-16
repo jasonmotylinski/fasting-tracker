@@ -100,6 +100,36 @@
     color: var(--accent);
 }
 
+.timer-times {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-xl);
+    margin-top: var(--space-md);
+}
+
+.timer-time {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2xs, 4px);
+}
+
+.timer-time-label {
+    font-family: var(--font-body, var(--font-display));
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.timer-time-value {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text-primary);
+}
+
 .timer-stop-btn {
     margin-top: var(--space-sm);
 }

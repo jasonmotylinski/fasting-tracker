@@ -110,14 +110,22 @@ function showActiveState() {
     document.getElementById('timer-idle').classList.add('hidden');
     document.getElementById('timer-active').classList.remove('hidden');
     document.getElementById('stop-btn').classList.remove('hidden');
+    document.getElementById('timer-times').classList.remove('hidden');
     document.getElementById('presets').classList.add('hidden');
     document.getElementById('timer-target').textContent = `of ${activeFast.target_hours}h`;
+
+    const startedAt = new Date(activeFast.started_at);
+    const endAt = new Date(startedAt.getTime() + activeFast.target_hours * 3600 * 1000);
+    const timeOpts = { hour: 'numeric', minute: '2-digit' };
+    document.getElementById('timer-start-time').textContent = startedAt.toLocaleTimeString([], timeOpts);
+    document.getElementById('timer-end-time').textContent = endAt.toLocaleTimeString([], timeOpts);
 }
 
 function showIdleState() {
     document.getElementById('timer-idle').classList.remove('hidden');
     document.getElementById('timer-active').classList.add('hidden');
     document.getElementById('stop-btn').classList.add('hidden');
+    document.getElementById('timer-times').classList.add('hidden');
     document.getElementById('presets').classList.remove('hidden');
     updateRing(0);
     document.getElementById('progress-ring').classList.remove('completed');
