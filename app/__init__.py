@@ -13,7 +13,7 @@ def create_app(config_name='development'):
 
     from app.models import db, User
     db.init_app(app)
-    migrate.init_app(app, db)
+    migrate.init_app(app, db, render_as_batch=True)
 
     login_manager = LoginManager()
     login_manager.init_app(app)

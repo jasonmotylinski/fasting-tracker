@@ -1,62 +1,80 @@
-from datetime import datetime, timedelta
+import calendar
+from datetime import date, datetime, timedelta
 
 from app.models import Fast
 
+DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
-def get_week_bounds(date=None):
-    """Get Monday-Sunday bounds for the week containing the given date."""
+
+def get_daily_progress(user_id, target_hours, date=None):
+    """Return daily fasting progress for each day of the current week (Mon-Sun)."""
     if date is None:
         date = datetime.utcnow().date()
     monday = date - timedelta(days=date.weekday())
-    sunday = monday + timedelta(days=6)
-    start = datetime(monday.year, monday.month, monday.day)
-    end = datetime(sunday.year, sunday.month, sunday.day, 23, 59, 59)
-    return start, end
 
-
-def get_weekly_summary(user_id, date=None):
-    """Return weekly fasting stats for the week containing the given date."""
-    start, end = get_week_bounds(date)
-
-    fasts = Fast.query.filter(
-        Fast.user_id == user_id,
-        Fast.started_at >= start,
-        Fast.started_at <= end,
-        Fast.ended_at.isnot(None),
-    ).all()
-
-    completed = [f for f in fasts if f.completed]
-    total_hours = sum(f.duration_seconds / 3600 for f in fasts)
-
-    return {
-        'week_start': start.date().isoformat(),
-        'completed': len(completed),
-        'total': len(fasts),
-        'total_hours': round(total_hours, 1),
-    }
-
-
-def get_current_streak(user_id):
-    """Count consecutive days (going backwards from today) with a completed fast."""
-    today = datetime.utcnow().date()
-    streak = 0
-    day = today
-
-    while True:
+    days = []
+    for i in range(7):
+        day = monday + timedelta(days=i)
         day_start = datetime(day.year, day.month, day.day)
         day_end = day_start + timedelta(days=1)
 
-        has_completed = Fast.query.filter(
+        fasts = Fast.query.filter(
             Fast.user_id == user_id,
             Fast.started_at >= day_start,
             Fast.started_at < day_end,
-            Fast.completed == True,
-        ).first()
+            Fast.ended_at.isnot(None),
+        ).all()
 
-        if has_completed:
-            streak += 1
-            day -= timedelta(days=1)
-        else:
-            break
+        hours = sum(f.duration_seconds / 3600 for f in fasts)
+        progress = min(1.0, hours / target_hours) if target_hours > 0 else 0.0
+        exceeded = hours > target_hours
 
-    return streak
+        days.append({
+            'date': day.isoformat(),
+            'label': DAY_LABELS[i],
+            'hours': round(hours, 1),
+            'target': target_hours,
+            'progress': round(progress, 4),
+            'exceeded': exceeded,
+        })
+
+    return days
+
+
+def get_monthly_progress(user_id, target_hours, year, month):
+    """Return daily fasting progress for each day of the given month."""
+    month_start = datetime(year, month, 1)
+    last_day = calendar.monthrange(year, month)[1]
+    month_end = datetime(year, month, last_day) + timedelta(days=1)
+
+    fasts = Fast.query.filter(
+        Fast.user_id == user_id,
+        Fast.started_at >= month_start,
+        Fast.started_at < month_end,
+        Fast.ended_at.isnot(None),
+    ).all()
+
+    by_day = {}
+    for f in fasts:
+        day_key = f.started_at.date()
+        by_day.setdefault(day_key, []).append(f)
+
+    days = []
+    for d in range(1, last_day + 1):
+        day = date(year, month, d)
+        day_fasts = by_day.get(day, [])
+        hours = sum(f.duration_seconds / 3600 for f in day_fasts)
+        progress = min(1.0, hours / target_hours) if target_hours > 0 else 0.0
+        exceeded = hours > target_hours
+
+        days.append({
+            'date': day.isoformat(),
+            'day': d,
+            'weekday': day.weekday(),  # 0=Monday … 6=Sunday
+            'hours': round(hours, 1),
+            'target': target_hours,
+            'progress': round(progress, 4),
+            'exceeded': exceeded,
+        })
+
+    return days

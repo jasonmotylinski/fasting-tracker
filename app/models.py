@@ -13,7 +13,6 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
     default_fast_hours = db.Column(db.Integer, default=16)
-    weekly_fast_goal = db.Column(db.Integer, default=5)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     fasts = db.relationship('Fast', backref='user', lazy='dynamic',
@@ -31,7 +30,6 @@ class User(UserMixin, db.Model):
             'email': self.email,
             'username': self.username,
             'default_fast_hours': self.default_fast_hours,
-            'weekly_fast_goal': self.weekly_fast_goal,
         }
 
 
