@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, session
 from flask_login import LoginManager
 from flask_migrate import Migrate
 
@@ -14,6 +14,10 @@ def create_app(config_name='development'):
     from app.models import db, User
     db.init_app(app)
     migrate.init_app(app, db)
+
+    @app.before_request
+    def make_session_permanent():
+        session.permanent = True
 
     login_manager = LoginManager()
     login_manager.init_app(app)
