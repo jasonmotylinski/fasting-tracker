@@ -1,10 +1,11 @@
-from datetime import datetime
+import calendar
+from datetime import datetime, timedelta
 
 from flask import Blueprint, jsonify, request
 from flask_login import current_user, login_required
 
 from app.models import Fast, db
-from app.services.stats import get_current_streak, get_weekly_summary
+from app.services.stats import get_daily_progress, get_monthly_progress
 
 api_bp = Blueprint('api', __name__, url_prefix='/api')
 
@@ -56,11 +57,27 @@ def active_fast():
 def fast_history():
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 20, type=int)
+    month_str = request.args.get('month')
 
-    pagination = Fast.query.filter(
+    query = Fast.query.filter(
         Fast.user_id == current_user.id,
         Fast.ended_at.isnot(None),
-    ).order_by(Fast.started_at.desc()).paginate(
+    )
+
+    if month_str:
+        try:
+            dt = datetime.strptime(month_str, '%Y-%m')
+            month_start = datetime(dt.year, dt.month, 1)
+            last_day = calendar.monthrange(dt.year, dt.month)[1]
+            month_end = datetime(dt.year, dt.month, last_day) + timedelta(days=1)
+            query = query.filter(
+                Fast.started_at >= month_start,
+                Fast.started_at < month_end,
+            )
+        except ValueError:
+            pass
+
+    pagination = query.order_by(Fast.started_at.desc()).paginate(
         page=page, per_page=per_page, error_out=False
     )
 
@@ -97,10 +114,27 @@ def weekly_stats():
         except ValueError:
             pass
 
-    summary = get_weekly_summary(current_user.id, date)
-    summary['goal'] = current_user.weekly_fast_goal
-    summary['streak'] = get_current_streak(current_user.id)
-    return jsonify(summary)
+    days = get_daily_progress(current_user.id, current_user.default_fast_hours, date)
+    return jsonify({'days': days})
+
+
+@api_bp.route('/stats/monthly')
+@login_required
+def monthly_stats():
+    month_str = request.args.get('month')
+    if month_str:
+        try:
+            dt = datetime.strptime(month_str, '%Y-%m')
+            year, month = dt.year, dt.month
+        except ValueError:
+            now = datetime.utcnow()
+            year, month = now.year, now.month
+    else:
+        now = datetime.utcnow()
+        year, month = now.year, now.month
+
+    days = get_monthly_progress(current_user.id, current_user.default_fast_hours, year, month)
+    return jsonify({'year': year, 'month': month, 'days': days})
 
 
 @api_bp.route('/user/goals', methods=['PUT'])
@@ -109,7 +143,5 @@ def update_goals():
     data = request.get_json(silent=True) or {}
     if 'default_fast_hours' in data:
         current_user.default_fast_hours = max(1, min(72, int(data['default_fast_hours'])))
-    if 'weekly_fast_goal' in data:
-        current_user.weekly_fast_goal = max(1, min(7, int(data['weekly_fast_goal'])))
     db.session.commit()
     return jsonify(current_user.to_dict())

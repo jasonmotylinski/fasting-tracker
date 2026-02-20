@@ -38,7 +38,4 @@ class GoalsForm(FlaskForm):
     default_fast_hours = IntegerField('Default Fast Duration', validators=[
         DataRequired(), NumberRange(min=1, max=72)
     ])
-    weekly_fast_goal = IntegerField('Weekly Fast Goal', validators=[
-        DataRequired(), NumberRange(min=1, max=7)
-    ])
     submit = SubmitField('Save Settings')

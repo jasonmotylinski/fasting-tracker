@@ -32,7 +32,6 @@ def settings():
     form = GoalsForm(obj=current_user)
     if form.validate_on_submit():
         current_user.default_fast_hours = form.default_fast_hours.data
-        current_user.weekly_fast_goal = form.weekly_fast_goal.data
         db.session.commit()
         flash('Settings saved.', 'success')
         return redirect(url_for('main.settings'))

@@ -179,17 +179,50 @@ function formatDuration(totalSeconds) {
     return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
+const DAILY_RING_R = 22;
+const DAILY_CIRCUMFERENCE = 2 * Math.PI * DAILY_RING_R;
+
 async function fetchWeeklyStats() {
     try {
         const res = await fetch('/api/stats/weekly');
         const data = await res.json();
-        document.getElementById('weekly-completed').textContent = `${data.completed}/${data.goal}`;
-        document.getElementById('weekly-goal').textContent = data.goal;
-        document.getElementById('weekly-hours').textContent = data.total_hours;
-        document.getElementById('weekly-streak').textContent = data.streak;
+        renderDailyRings(data.days);
     } catch (e) {
         console.error('Failed to fetch weekly stats:', e);
     }
+}
+
+function renderDailyRings(days) {
+    const container = document.getElementById('daily-rings');
+    if (!container) return;
+
+    const today = new Date().toISOString().split('T')[0];
+    container.innerHTML = '';
+
+    days.forEach(day => {
+        const isToday = day.date === today;
+        const hasData = day.hours > 0;
+        const offset = hasData
+            ? DAILY_CIRCUMFERENCE * (1 - day.progress)
+            : DAILY_CIRCUMFERENCE;
+        const exceededClass = day.exceeded ? ' exceeded' : '';
+        const hoursDisplay = hasData ? `${day.hours}h` : '·';
+
+        const wrap = document.createElement('div');
+        wrap.className = `daily-ring-wrap${isToday ? ' today' : ''}`;
+        wrap.innerHTML = `
+            <svg class="daily-ring-svg" viewBox="0 0 60 60">
+                <circle class="daily-ring-bg" cx="30" cy="30" r="${DAILY_RING_R}" />
+                <circle class="daily-ring-progress${exceededClass}"
+                    cx="30" cy="30" r="${DAILY_RING_R}"
+                    stroke-dasharray="${DAILY_CIRCUMFERENCE.toFixed(2)}"
+                    stroke-dashoffset="${offset.toFixed(2)}" />
+            </svg>
+            <span class="daily-ring-label">${day.label}</span>
+            <span class="daily-ring-hours">${hoursDisplay}</span>
+        `;
+        container.appendChild(wrap);
+    });
 }
 
 /* ---- History ---- */
@@ -197,11 +230,16 @@ async function fetchWeeklyStats() {
 let historyPage = 1;
 let historyTotalPages = 1;
 
+// Calendar state
+let calendarYear = null;
+let calendarMonth = null;
+
+const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June',
+                     'July', 'August', 'September', 'October', 'November', 'December'];
+
 function initHistory() {
     const list = document.getElementById('history-list');
     if (!list) return;
-
-    fetchHistory();
 
     const loadMoreBtn = document.getElementById('load-more-btn');
     if (loadMoreBtn) {
@@ -210,6 +248,112 @@ function initHistory() {
             fetchHistory(true);
         });
     }
+
+    // Initialize calendar + list for current month
+    const now = new Date();
+    calendarYear = now.getFullYear();
+    calendarMonth = now.getMonth() + 1;
+    fetchMonthlyStats(calendarYear, calendarMonth);
+    fetchHistory();
+
+    // Calendar nav
+    document.getElementById('cal-prev').addEventListener('click', () => {
+        calendarMonth--;
+        if (calendarMonth < 1) {
+            calendarMonth = 12;
+            calendarYear--;
+        }
+        fetchMonthlyStats(calendarYear, calendarMonth);
+        resetHistory();
+        updateCalNavButtons();
+    });
+
+    document.getElementById('cal-next').addEventListener('click', () => {
+        calendarMonth++;
+        if (calendarMonth > 12) {
+            calendarMonth = 1;
+            calendarYear++;
+        }
+        fetchMonthlyStats(calendarYear, calendarMonth);
+        resetHistory();
+        updateCalNavButtons();
+    });
+}
+
+function resetHistory() {
+    historyPage = 1;
+    historyTotalPages = 1;
+    const list = document.getElementById('history-list');
+    list.innerHTML = '';
+    document.getElementById('history-empty').classList.add('hidden');
+    document.getElementById('history-pagination').classList.add('hidden');
+    fetchHistory();
+}
+
+function updateCalNavButtons() {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+    const nextBtn = document.getElementById('cal-next');
+    const atCurrent = calendarYear === currentYear && calendarMonth === currentMonth;
+    nextBtn.disabled = atCurrent;
+}
+
+async function fetchMonthlyStats(year, month) {
+    const monthStr = `${year}-${String(month).padStart(2, '0')}`;
+    try {
+        const res = await fetch(`/api/stats/monthly?month=${monthStr}`);
+        const data = await res.json();
+        renderCalendar(data);
+        updateCalNavButtons();
+    } catch (e) {
+        console.error('Failed to fetch monthly stats:', e);
+    }
+}
+
+function renderCalendar(data) {
+    const grid = document.getElementById('cal-grid');
+    const label = document.getElementById('cal-month-label');
+    if (!grid || !label) return;
+
+    label.textContent = `${MONTH_NAMES[data.month - 1]} ${data.year}`;
+    grid.innerHTML = '';
+
+    const today = new Date().toISOString().split('T')[0];
+
+    // Offset: first day weekday (0=Mon). Add empty cells.
+    const firstWeekday = data.days[0].weekday;
+    for (let i = 0; i < firstWeekday; i++) {
+        const empty = document.createElement('div');
+        empty.className = 'cal-day cal-day--empty';
+        grid.appendChild(empty);
+    }
+
+    data.days.forEach(day => {
+        const isToday = day.date === today;
+        const hasData = day.hours > 0;
+        const offset = hasData
+            ? DAILY_CIRCUMFERENCE * (1 - day.progress)
+            : DAILY_CIRCUMFERENCE;
+        const exceededClass = day.exceeded ? ' exceeded' : '';
+
+        const cell = document.createElement('div');
+        cell.className = `cal-day${isToday ? ' cal-day--today' : ''}`;
+
+        cell.innerHTML = `
+            <svg class="daily-ring-svg" viewBox="0 0 60 60">
+                <circle class="daily-ring-bg" cx="30" cy="30" r="${DAILY_RING_R}" />
+                <circle class="daily-ring-progress${exceededClass}"
+                    cx="30" cy="30" r="${DAILY_RING_R}"
+                    stroke-dasharray="${DAILY_CIRCUMFERENCE.toFixed(2)}"
+                    stroke-dashoffset="${offset.toFixed(2)}" />
+                <text class="cal-day-num" x="30" y="30"
+                    transform="rotate(90, 30, 30)"
+                    text-anchor="middle" dominant-baseline="central">${day.day}</text>
+            </svg>
+        `;
+        grid.appendChild(cell);
+    });
 }
 
 async function fetchHistory(append = false) {
@@ -220,7 +364,8 @@ async function fetchHistory(append = false) {
     if (!append && loading) loading.classList.remove('hidden');
 
     try {
-        const res = await fetch(`/api/fast/history?page=${historyPage}`);
+        const monthStr = `${calendarYear}-${String(calendarMonth).padStart(2, '0')}`;
+        const res = await fetch(`/api/fast/history?page=${historyPage}&month=${monthStr}`);
         const data = await res.json();
 
         if (loading) loading.classList.add('hidden');
