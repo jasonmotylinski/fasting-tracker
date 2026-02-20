@@ -146,7 +146,7 @@ function updateTimerDisplay() {
     const elapsed = Math.floor((now - startedAt) / 1000);
     const target = activeFast.target_hours * 3600;
     const progress = Math.min(1, elapsed / target);
-    const pct = Math.round(progress * 100);
+    const pct = Math.round((elapsed / target) * 100);
 
     // Update time display
     document.getElementById('timer-elapsed').textContent = formatDuration(elapsed);
