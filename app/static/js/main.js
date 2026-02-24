@@ -37,7 +37,17 @@ function initDashboard() {
             document.querySelectorAll('.preset').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             selectedHours = parseInt(btn.dataset.hours);
+            document.getElementById('custom-hours-input').value = '';
         });
+    });
+
+    // Custom hours input
+    document.getElementById('custom-hours-input').addEventListener('input', (e) => {
+        const val = parseInt(e.target.value);
+        if (val >= 1 && val <= 72) {
+            document.querySelectorAll('.preset').forEach(b => b.classList.remove('active'));
+            selectedHours = val;
+        }
     });
 
     // Start button
