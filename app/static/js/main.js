@@ -46,6 +46,11 @@ function initDashboard() {
     // Stop button
     document.getElementById('stop-btn').addEventListener('click', stopFast);
 
+    // Edit start time
+    document.getElementById('edit-start-btn').addEventListener('click', openStartEdit);
+    document.getElementById('cancel-start-btn').addEventListener('click', closeStartEdit);
+    document.getElementById('save-start-btn').addEventListener('click', saveStartTime);
+
     // Check for active fast
     fetchActiveFast();
 
@@ -103,6 +108,47 @@ async function stopFast() {
         fetchWeeklyStats();
     } catch (e) {
         console.error('Failed to stop fast:', e);
+    }
+}
+
+function openStartEdit() {
+    const d = new Date(activeFast.started_at);
+    // Convert UTC to local datetime-local string (YYYY-MM-DDTHH:MM)
+    const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+    document.getElementById('start-time-input').value = local.toISOString().slice(0, 16);
+    document.getElementById('timer-start-row').classList.add('hidden');
+    document.getElementById('timer-start-edit').classList.remove('hidden');
+}
+
+function closeStartEdit() {
+    document.getElementById('timer-start-edit').classList.add('hidden');
+    document.getElementById('timer-start-row').classList.remove('hidden');
+}
+
+async function saveStartTime() {
+    const input = document.getElementById('start-time-input');
+    const localDate = new Date(input.value);
+    if (isNaN(localDate.getTime())) {
+        alert('Invalid date/time');
+        return;
+    }
+
+    try {
+        const res = await fetch('/api/fast/active', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ started_at: localDate.toISOString() }),
+        });
+        if (!res.ok) {
+            const err = await res.json();
+            alert(err.error || 'Failed to update start time');
+            return;
+        }
+        activeFast = await res.json();
+        closeStartEdit();
+        showActiveState();
+    } catch (e) {
+        console.error('Failed to update start time:', e);
     }
 }
 

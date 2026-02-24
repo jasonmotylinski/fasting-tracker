@@ -130,6 +130,92 @@
     color: var(--text-primary);
 }
 
+.timer-time-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.timer-edit-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    padding: 2px;
+    color: var(--text-faint);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: color 0.15s;
+}
+
+.timer-edit-btn:hover {
+    color: var(--text-secondary);
+}
+
+.timer-start-edit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-top: 2px;
+}
+
+.start-time-input {
+    background: var(--surface-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 13px;
+    padding: 5px 8px;
+    width: 100%;
+    max-width: 200px;
+    color-scheme: dark;
+}
+
+.start-time-input:focus {
+    outline: none;
+    border-color: var(--blue-400);
+}
+
+.timer-edit-actions {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.timer-edit-cancel,
+.timer-edit-save {
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.timer-edit-cancel {
+    background: var(--surface-overlay);
+    color: var(--text-secondary);
+}
+
+.timer-edit-cancel:hover {
+    background: var(--surface-raised);
+}
+
+.timer-edit-save {
+    background: var(--blue-600);
+    color: #fff;
+    border-color: var(--blue-600);
+}
+
+.timer-edit-save:hover {
+    background: var(--blue-500);
+    border-color: var(--blue-500);
+}
+
 .timer-stop-btn {
     margin-top: var(--space-sm);
 }

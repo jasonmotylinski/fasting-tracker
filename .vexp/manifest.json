@@ -1,0 +1,28 @@
+{
+  "file_hashes": {
+    "app/__init__.py": "650ce5091d050f8e39f20fb04720e47a24a9de71450587333f55294eec1cfb01",
+    "app/api.py": "d549e4b38226e24e0ee19d673df92a7ae8692f457514c5dd2329ecddb0606890",
+    "app/auth.py": "dca7d7c93df686584e64287d6e65396f5be4dc267f33dff4998e0b275d07c2b1",
+    "app/forms.py": "18c47851f522496ad2f300a26670e8b913fc168fa467e57529b36d97e66e3b4a",
+    "app/main.py": "15ee36375d368f17740a1fa9a5db6e906512fd6817f9eb041c9a163fb111ebb5",
+    "app/models.py": "fe575677a3ddd3015f362f837cbfffe790f079ac25eb4c475530af2be37643c6",
+    "app/services/__init__.py": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+    "app/services/stats.py": "d5189ba38ede6eabd684fff73a98ff20836ca29b7a8e9d53767618d45beacb18",
+    "app/static/js/main.js": "c5b86c053f3e42d2e4a70e988c6894ee317521e459330b9ec8ef68e2200b1614",
+    "config.py": "c68e2bdf6b2bf5608128e4d742f60c22686d019d0684057c3badf9f30f2920e6",
+    "migrations/env.py": "0432b42dc965340cd1a625e94b5ab596bbb9823735cf426f40b1c27a445d96ef",
+    "migrations/versions/b280894ed6c7_remove_weekly_fast_goal.py": "3b88c5d80f365e584415ed2d3403ee811d20f658991fb17e051c07b1a02669ed",
+    "run.py": "0b750f5df775ac4dc42c8e6eedce768eb644b29f4a7a285650e1116ebd7a2f59",
+    "scripts/prod/deploy.sh": "59c124d4ad0b8300c950df48fd84f1b5a3e4d26ffe0e4e439edb7e04dffb0366",
+    "scripts/prod/server.sh": "8d93c43f8a79e1e14dbad5a1393a4b60511696ed212a381ae9ce5d08646177a9"
+  },
+  "indexed_at_commit": "fcb02253db1d023d2006d0d2680f8d5d365fee8d",
+  "indexed_at_timestamp": "2026-02-24T22:29:01.775477+00:00",
+  "schema_version": 3,
+  "stats": {
+    "total_edges": 40,
+    "total_files": 15,
+    "total_nodes": 64
+  },
+  "vexp_version": "1.2.12"
+}

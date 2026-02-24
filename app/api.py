@@ -52,6 +52,35 @@ def active_fast():
     return jsonify(active.to_dict())
 
 
+@api_bp.route('/fast/active', methods=['PATCH'])
+@login_required
+def update_active_fast():
+    active = Fast.query.filter_by(user_id=current_user.id, ended_at=None).first()
+    if not active:
+        return jsonify({'error': 'No active fast'}), 400
+
+    data = request.get_json(silent=True) or {}
+    if 'started_at' not in data:
+        return jsonify({'error': 'started_at is required'}), 400
+
+    try:
+        new_start = datetime.fromisoformat(data['started_at'].replace('Z', '+00:00'))
+        if new_start.tzinfo is not None:
+            new_start = new_start.replace(tzinfo=None)
+    except (ValueError, AttributeError):
+        return jsonify({'error': 'Invalid started_at format'}), 400
+
+    now = datetime.utcnow()
+    if new_start >= now:
+        return jsonify({'error': 'Start time must be in the past'}), 400
+    if (now - new_start).days > 7:
+        return jsonify({'error': 'Start time cannot be more than 7 days ago'}), 400
+
+    active.started_at = new_start
+    db.session.commit()
+    return jsonify(active.to_dict())
+
+
 @api_bp.route('/fast/history')
 @login_required
 def fast_history():
